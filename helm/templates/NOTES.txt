@@ -1,0 +1,5 @@
+1. Get the application URL by running these commands:
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "helmtest.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n={{ .Release.Namespace }})
+  echo http://$SERVICE_IP:80

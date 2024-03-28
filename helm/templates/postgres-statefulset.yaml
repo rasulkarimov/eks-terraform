@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  serviceName: postgres
+  selector:
+    matchLabels:
+      run: postgres
+  template:
+    metadata:
+      labels:
+        run: postgres
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          env:
+          - name: POSTGRES_USER
+            value: postgres1
+          - name: POSTGRES_PASSWORD
+            value: postgres1
+          - name: POSTGRES_DB
+            value: posts_api
+          # envFrom:
+          #   - configMapRef:
+          #       name: postgres-config
+          # volumeMounts:
+            # - mountPath: /var/lib/postgresql/data
+            #   name: postgredb
+            # - mountPath: /docker-entrypoint-initdb.d
+            #   name: init
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      volumes:
+        # - name: postgredb
+        #   persistentVolumeClaim:
+        #     claimName: postgres-pv-claim
+        # - name: init
+        #   configMap:
+        #     name: postgres-config
+        #     items:
+        #     - key: init
+        #       path: init.sql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: staging
+spec:
+  ports:
+  - port: 5432
+  selector:
+    run: postgres

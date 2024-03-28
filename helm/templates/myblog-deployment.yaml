@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myblog
+spec:
+  selector:
+    matchLabels:
+      run: myblog
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: myblog
+    spec:
+      containers:
+      - name: myblog
+        image: {{ .Values.myblog.image.repository }}:{{ .Values.myblog.image.tag }}
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 150Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myblog
+spec:
+  ports:
+  - port: 8080
+  selector:
+    run: myblog
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: myblog
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      run: myblog
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db
+  annotations:
+    # run only for initial install
+    "helm.sh/hook": post-install{{- if .Values.myblog.initDbJob.force }},post-upgrade{{- end }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-db
+        image: {{ .Values.myblog.image.repository }}:{{ .Values.myblog.image.tag }}
+        command: ["/bin/sh", "-c", "flask db init && flask db migrate && flask db upgrade "]
+      restartPolicy: Never
+  backoffLimit: 4
+  
+# {{- if .Release.IsInstall -}}
+# {{- end -}}

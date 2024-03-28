@@ -1,0 +1,132 @@
+# # MongoDB Deployment - Database
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mongo
+# spec:
+#   selector:
+#     matchLabels:
+#       app: mern-stack
+#   replicas: 1
+#   template:
+#     metadata:
+#       labels:
+#         app: mern-stack
+#     spec:
+#       containers:
+#         - name: mongo
+#           image: mongo:latest
+#           imagePullPolicy: IfNotPresent
+#           ports:
+#             - containerPort: 27017
+#           volumeMounts:
+#             - name: data
+#               mountPath: /data
+#               readOnly: false
+#           resources:
+#             requests:
+#               memory: "2Gi"
+#               cpu: "250m"
+#             limits:
+#               memory: "8Gi"
+#               cpu: "500m"
+#       volumes:
+#         - name: data
+#           persistentVolumeClaim:
+#             claimName: mern-stack-data
+# ---
+# # Persistent Volume Claim - Data Storage
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: mern-stack-data
+#   labels:
+#     app: mern-stack
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 50Gi
+# ---
+# # MongoDB Service - Expose the Database
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mongo
+#   labels:
+#     app: mern-stack
+# spec:
+#   ports:
+#     - name: mongo
+#       port: 27017
+#       targetPort: 27017
+#   type: NodePort
+#   selector:
+#     app: mern-stack
+# ---
+# # Server-Side Container - Backend
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mern-stack
+# spec:
+#   selector:
+#     matchLabels:
+#       app: mern-stack
+#   replicas: 1
+#   template:
+#     metadata:
+#       labels:
+#         app: mern-stack
+#     spec:
+#       containers:
+#         - name: application-backend
+#           image: application-backend:latest
+#           imagePullPolicy: Never
+#           ports:
+#             - containerPort: 9050
+#           volumeMounts:
+#             - name: server-data
+#               mountPath: /data
+#               readOnly: false
+#           resources:
+#             requests:
+#               memory: "2Gi"
+#               cpu: "250m"
+#             limits:
+#               memory: "4Gi"
+#               cpu: "500m"
+#       volumes:
+#         - name: data
+#           persistentVolumeClaim:
+#             claimName: mern-stack-data
+# ---
+# # Client-Side Container - Frontend
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mern-stack-client
+# spec:
+#   selector:
+#     matchLabels:
+#       app: mern-stack-client
+#   replicas: 1
+#   template:
+#     metadata:
+#       labels:
+#         app: mern-stack-client
+#     spec:
+#       containers:
+#         - name: application-frontend
+#           image: application-frontend:latest
+#           imagePullPolicy: Never
+#           ports:
+#             - containerPort: 443
+#           resources:
+#             requests:
+#                 memory: "1Gi"
+#                 cpu: "100m"
+#             limits:
+#               memory: "2Gi"
+#               cpu: "250m"
