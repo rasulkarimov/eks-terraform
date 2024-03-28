@@ -6,6 +6,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.sql import func
 
+# to for testing hpa
+import cpu_loadtest
+
 app = Flask(__name__)
 
 # TODO define in env
@@ -77,6 +80,10 @@ def delete(id):
     db.session.commit()
     flash('"{}" was successfully deleted!'.format(post.title))
     return redirect(url_for('index'))
+
+@app.route('/testhpa')
+def testhpa():
+    cpu_loadtest.main()
 
 if __name__=="__main__":
     ENVIRONMENT_DEBUG = os.environ.get("APP_DEBUG", True)

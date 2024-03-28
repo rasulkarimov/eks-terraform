@@ -20,13 +20,19 @@ terraform apply -var-file=staging.tfvars
 
 Installation time will take around ~9 minutes. When EKS cluster installed, authenticate into EKS cluster with command:
 ~~~
-aws eks update-kubeconfig --name <defined cluster_name in stagin.tfvars> --region <defined region in stagin.tfvars>
+aws eks update-kubeconfig --name staging --region <defined region in stagin.tfvars>
 ~~~
 
 Inspect the cluster nodes and pods
 ~~~
 kubectl get nodes
 kubectl get pods -n kube-system
+~~~
+
+Get URL and heck availability on browser. Additional time can be required for provision LoadBalanver, make sure that "nginx-lb" Service not in panding state:
+~~~
+kubectl get svc -n=staging
+echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging):8090"
 ~~~
 
 ## Deploy application by Helm 
@@ -39,18 +45,12 @@ cat values.yaml
 ~~~
 Deploy application with Helm:
 ~~~
-helm upgrade --install --namespace=staging --create-namespace  <defined environment in stagin.tfvars> ./
+helm upgrade --install --namespace=staging --create-namespace  staging ./
 ~~~
 
 Inspect that pods were created:
 ~~~
 kubectl get pods -n=staging
-~~~
-
-Get URL and heck availability on browser. Additional time can be required for provision LoadBalanver, make sure that "nginx-lb" Service not in panding state:
-~~~
-kubectl get svc -n=staging
-echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging):8090"
 ~~~
 
 During the initial installation, the 'initDb' job runs to initialize the PostgreSQL database. Ensure that this job completes successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then rerun the 'helm upgrade' command.

@@ -668,3 +668,32 @@ resource "helm_release" "aws-load-balancer-controller" {
   ]
 }
 
+##############
+# Metrics server
+##############
+resource "helm_release" "metrics-server" {
+  name = "metrics-server"
+
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
+  namespace  = "kube-system"
+  version    = "3.8.2"
+
+  set {
+    name  = "metrics.enabled"
+    value = false
+  }
+
+  depends_on = [aws_eks_node_group.private-nodes]
+}
+
+# test prometheus 
+resource "helm_release" "kube-prometheus-stack" {
+  name = "kube-prometheus-stack"
+
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  version    = "57.2.0"
+  namespace  = "monitoring"
+  create_namespace = true
+}
