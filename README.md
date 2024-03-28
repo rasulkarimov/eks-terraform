@@ -1,6 +1,5 @@
-# eks-terraform
 # Full Stack MyBlog Application
-This guide provides step-by-step instructions for provisioning a Kubernetes cluster using Terraform. Before you begin, ensure that you have the following tools installed locally: terraform, aws, docker, helm, kubectl
+This guide provides step-by-step instructions for provisioning a Kubernetes cluster using Terraform. Before you begin, ensure that you have the following tools installed on your laptop: terraform, aws, docker, helm, kubectl
 
 ## Provisioning a Kubernetes Cluster using Terraform
 To get started, follow these steps:
@@ -18,9 +17,9 @@ terraform plan -var-file=staging.tfvars
 terraform apply -var-file=staging.tfvars
 ~~~
 
-Installation time will take around ~9 minutes. When EKS cluster installed, authenticate into EKS cluster with command:
+Installation time will take around ~10 minutes. When EKS cluster installed, authenticate into EKS cluster with command:
 ~~~
-aws eks update-kubeconfig --name staging --region <defined region in stagin.tfvars>
+aws eks update-kubeconfig --name staging --region eu-north-1
 ~~~
 
 Inspect the cluster nodes and pods
@@ -32,7 +31,7 @@ kubectl get pods -n kube-system
 Get URL and heck availability on browser. Additional time can be required for provision LoadBalanver, make sure that "nginx-lb" Service not in panding state:
 ~~~
 kubectl get svc -n=staging
-echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging):8090"
+echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)"
 ~~~
 
 ## Deploy application by Helm 
