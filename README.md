@@ -38,7 +38,7 @@ The previous command should provide the public URL to the application, open it o
 If an Internal Server error occurs, it's more likely that the database initialization failed. For upgrading/troubleshooting, follow the "Deploy/Upgrade Application by Helm" instructions below. Otherwise, you can skip it.
 
 ## Deploy/Upgrade application by Helm 
-This part is already included in Terraform with `null_resource.docker_packaging_helm_install` Below allows for manual chart updates or troubleshooting in case of any problems during Terraform installation.
+This part is already included in Terraform with `null_resource.docker_packaging_helm_install`. The instructions below are for manually updating the application or for troubleshooting in case of any problems during Terraform installation.
 
 During the initial installation, the 'initDb' job runs to initialize the PostgreSQL database. Ensure that this job completes successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then rerun the 'helm upgrade'.
 
@@ -48,17 +48,17 @@ cd ../../../helm/
 cat values.yaml
 ~~~
 
-Authenticate into EKS cluster with the command:
+Authenticate into EKS cluster with the command(if required):
 ~~~
 aws eks update-kubeconfig --name staging --region eu-north-1
 ~~~
 
-Deploy application with Helm:
+Deploy/upgrade application with Helm:
 ~~~
 helm upgrade --install --namespace=staging --create-namespace  staging ./
 ~~~
 
-Inspect that pods were created:
+Inspect that pods are running:
 ~~~
 kubectl get pods -n=staging
 ~~~
