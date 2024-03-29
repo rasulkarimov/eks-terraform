@@ -84,14 +84,16 @@ Chack service metrics through Grafana Dashboard. Obtain the URL for Grafana dash
 kubectl get svc grafana-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=monitoring
 ~~~
 
-Open in your browser and log in using default credentials( admin / prom-operator ):
+Open in your browser and login using default credentials (admin / prom-operator)
+![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/42c44b62-a6de-4211-91d6-c732a3e705e9)
+
 ![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/96dd3f01-e3c3-426d-b942-b98b2d183d53)
 
 ![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/5d8c1734-5679-48a3-a615-074f3184f1ec)
 
 From the dashboard, we can observe more detailed CPU, memory, and network metrics of our microservices.
 
-Additionally, we should consider implementing additional application metrics. A good starting point could be the For Golden Signals, ref: https://sre.google/sre-book/monitoring-distributed-systems/
+Moreover, it's worth considering the implementation of additional application metrics. A recommended starting point would be the Four Golden Signals, referenced here: https://sre.google/sre-book/monitoring-distributed-systems/
 
-Furthermore, full CI/CD integration should be configured, including tests and security tests in the CI/CD flow.
-In this demo, Nginx proxies requests to the myblog service, which, to be honest, is meaningless. Actually, "myblog" serves both front and backend, it needs to be separated, and the backend should provide an API for the front end (and possibly for other integrations). In this case, the architecture will be more scalable and maintainable. For this POC, I used a Flask project that I had on hand, on which I experimented few years ago.
+Furthermore, full CI/CD integration should be configured, including tests and security tests in the CI/CD flow. Optimizing management of configuration files is essential, alongside managing secret credentials through services like HashiCorp Vault or AWS Secrets Manager, for instance.
+In this demo, Nginx proxies requests to the myblog service, which, to be honest, is meaningless. Actually, "myblog" serves both front and backend, it needs to be separated, and the backend should provide an API for the frontend (and possibly for other services). In this case, the architecture will be more scalable and maintainable. For this POC, I used a Flask project that I had on hand, on which I experimented few years ago.
