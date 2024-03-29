@@ -697,4 +697,5 @@ resource "helm_release" "kube-prometheus-stack" {
   namespace  = "monitoring"
   create_namespace = true
 
+  depends_on = [aws_eks_node_group.private-nodes]
 }

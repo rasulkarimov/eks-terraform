@@ -5,11 +5,12 @@
 replicaCount: 1
 
 myblog:
+  initDbJob:
+    force: false
   image:
     repository: 634087373040.dkr.ecr.eu-north-1.amazonaws.com/myblog
     tag: "0.0.1"
-  initDbJob:
-    force: false
+
 
 nginx:
   image:

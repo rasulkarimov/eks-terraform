@@ -44,7 +44,6 @@ resource "null_resource" "docker_packaging_helm_install" {
 	  provisioner "local-exec" {
 			when    = destroy
 	    command = <<EOF
-      echo "Uninstall Helm Apps"
 			helm uninstall staging  -n staging || true
 			helm uninstall kube-prometheus-stack  -n monitoring || true
 	    EOF
@@ -56,6 +55,6 @@ resource "null_resource" "docker_packaging_helm_install" {
 	
 	  depends_on = [
 	    aws_ecr_repository.myblog,
-      aws_eks_cluster.dev
+      aws_eks_node_group.private-nodes
 	  ]
 }
