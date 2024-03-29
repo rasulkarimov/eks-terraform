@@ -10,7 +10,7 @@ cd terraform/projects/openinnovation/
 cat main.tf
 ~~~
 
-Install infrustructure:
+Initialize Terraform, Preview changes and Apply changes:
 ~~~
 terraform init
 terraform plan -var-file=staging.tfvars
