@@ -28,12 +28,12 @@ kubectl get nodes
 kubectl get pods -n kube-system
 ~~~
 
-Get URL and heck availability. Additional time can be required for provision LoadBalanver, make sure that "nginx-lb" Service not in panding state:
+Retrieve the URL and check availability. Note: Additional time may be required for LoadBalancer provisioning. Ensure that the "nginx-lb" Service is not in a pending state.
 ~~~
 kubectl get svc -n=staging
 echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)"
 ~~~
-Open on the browser:
+The previous command should provide the public URL to the application, open it on the browser:
 ![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/990bbeaf-2682-4e9a-b45b-8cf9fb515724)
 If an Internal Server error occurs, it's more likely that the database initialization failed. For upgrading/troubleshooting, follow the "Deploy/Upgrade Application by Helm" instructions below. Otherwise, you can skip it.
 
