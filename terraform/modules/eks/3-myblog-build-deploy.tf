@@ -55,6 +55,7 @@ resource "null_resource" "docker_packaging_helm_install" {
 	
 	  depends_on = [
 	    aws_ecr_repository.myblog,
-      aws_eks_node_group.private-nodes
+      aws_eks_node_group.private-nodes,
+			helm_release.kube-prometheus-stack
 	  ]
 }
