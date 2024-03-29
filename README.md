@@ -76,10 +76,10 @@ Then check HPA status and pod replicas with commands:
 kubectl get hpa -n=staging
 kubectl get pods -n=staging
 ~~~
-As we can see, CPU usage increased, triggering the autoscaling of "myblog" instances:
+As we can see, CPU usage increased, this triggered the autoscaling of "myblog" instances:
 ![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/97958e1c-6548-4530-a992-00800dafe3c0)
 
-Monitor service metrics through Grafana Dashboard. Obtain the URL for Grafana dashboard:
+Chack service metrics through Grafana Dashboard. Obtain the URL for Grafana dashboard:
 ~~~
 kubectl get svc grafana-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=monitoring
 ~~~
