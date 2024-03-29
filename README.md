@@ -35,12 +35,13 @@ echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingre
 ~~~
 The previous command should provide the public URL to the application, open it on the browser:
 ![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/990bbeaf-2682-4e9a-b45b-8cf9fb515724)
-If an Internal Server error occurs, it's more likely that the database initialization failed. For upgrading/troubleshooting, follow the "Deploy/Upgrade Application by Helm" instructions below. Otherwise, you can skip it.
+If an Internal Server error occurs, it's more likely that the database initialization failed. The database initialization runs only after the first installation as a post-start hook. If, for some reason, the first installation fails, then Helm should be rerun with the option "myblog.initDbJob.force: true." Alternatively, Helm should be uninstalled and then installed from scratch.
+For upgrading/troubleshooting, follow the "Deploy/Upgrade Application by Helm" instructions below. Otherwise, you can skip it.
 
 ## Deploy/Upgrade application by Helm 
 This part is already included in Terraform with `null_resource.docker_packaging_helm_install`. The instructions below are for manually updating the application or for troubleshooting in case of any problems during Terraform installation.
 
-During the initial installation, the 'initDb' job runs to initialize the PostgreSQL database. Ensure that this job completes successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then rerun the 'helm upgrade'.
+During the initial installation, the 'initDbJob' job runs to initialize the PostgreSQL database. Ensure that this job completes successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then rerun the 'helm upgrade'.
 
 Inspect `values.yaml` File in "helm" Directory. Make sure that the correct image repositories are defined in myblog.image.repository and myblog.image.repository:
 ~~~
