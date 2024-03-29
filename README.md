@@ -66,7 +66,7 @@ kubectl get pods -n=staging
 ## Testing High Availability:
 For high availability, my-blog was configured with a minimum of 2 replicas and autoscaling enabled to handle increased traffic.
 
-To test autoscaling, use cpu_loadtest.py within a container. Trigger it by sending a GET request to /testcpu path by curl or in browser:
+To test autoscaling, cpu_loadtest.py script was put into the image. It can be trigger by sending a GET request to /testcpu path by curl or in browser:
 ~~~
 curl $(echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)")/testhpa
 ~~~
