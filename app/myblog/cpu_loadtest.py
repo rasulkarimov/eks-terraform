@@ -4,7 +4,7 @@ import time
 
 def f(x):
     set_time = 1
-    timeout = time.time() + 60 * float(set_time)  # X minutes from now
+    timeout = time.time() + 90 * float(set_time)  
     while True:
         if time.time() > timeout:
             break

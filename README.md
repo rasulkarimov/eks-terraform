@@ -54,3 +54,9 @@ kubectl get pods -n=staging
 ~~~
 
 During the initial installation, the 'initDb' job runs to initialize the PostgreSQL database. Ensure that this job completes successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then rerun the 'helm upgrade' command.
+
+
+helm uninstall staging  -n staging
+helm uninstall kube-prometheus-stack  -n monitoring
+aws ecr delete-repository --region=eu-north-1 --repository-name testmyblog --force
+aws ecr delete-repository --region=eu-north-1 --repository-name testnginx --force

@@ -3,19 +3,24 @@
 ##############
 resource "aws_ecr_repository" "nginx" {
 	  name = "testnginx"
+		force_delete = true
 	  image_scanning_configuration {
 			# enable scan on push
 	    scan_on_push = true
 	  }
+		
 }
 
 resource "aws_ecr_repository" "myblog" {
 	  name = "testmyblog"
+		force_delete = true
 	  image_scanning_configuration {
 			# enable scan on push
 	    scan_on_push = true
 	  }
+		
 }
+
 ##############
 # MyBlog App: build, deploy
 ##############
@@ -34,6 +39,14 @@ resource "null_resource" "docker_packaging_helm_install" {
       --set=myblog.image.repository="${aws_ecr_repository.myblog.repository_url}" \
       --set=nginx.image.repository="${aws_ecr_repository.nginx.repository_url}" \
       --namespace=staging --create-namespace  "${var.environment}" ../../../helm
+	    EOF
+	  }
+	  provisioner "local-exec" {
+			when    = destroy
+	    command = <<EOF
+      echo "Uninstall Helm Apps"
+			helm uninstall staging  -n staging || true
+			helm uninstall kube-prometheus-stack  -n monitoring || true
 	    EOF
 	  }
 
