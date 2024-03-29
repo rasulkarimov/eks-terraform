@@ -99,3 +99,11 @@ Moreover, it's worth considering the implementation of additional application me
 Furthermore, full CI/CD integration should be configured, including tests and security tests in the CI/CD flow. Optimizing management of configuration files is essential, alongside managing secret credentials through services like HashiCorp Vault or AWS Secrets Manager, for instance. Also, HTTPS has to be configured. Access to Kubernetes API has to be restricted, public access should be denied, VPN configured. And much more needs to be done.
 
 In this demo, Nginx proxies requests to the myblog service, which, to be honest, is meaningless. Actually, "myblog" serves both front and backend, it needs to be separated, and the backend should provide an API for the frontend (and possibly for other services). In this case, the architecture will be more scalable and maintainable. For this POC, I used a Flask project that I had on hand, on which I experimented few years ago.
+
+## Destroy the cluster
+Delete load balancers and destroy infrastructure with terraform:
+~~~
+kubectl delete svc nginx-lb  -n staging
+kubectl delete svc grafana-lb  -n monitoring
+terraform destroy
+~~~
