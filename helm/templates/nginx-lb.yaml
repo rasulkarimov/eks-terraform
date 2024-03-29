@@ -10,6 +10,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 8090
+  - port: 80
+    targetPort: 8090
   selector:
     run: nginx
