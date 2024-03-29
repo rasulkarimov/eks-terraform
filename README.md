@@ -16,6 +16,7 @@ terraform init
 terraform plan -var-file=staging.tfvars
 terraform apply -var-file=staging.tfvars
 ~~~
+<img width="1220" alt="image" src="https://github.com/rasulkarimov/eks-terraform/assets/53195216/5e9a0e9a-1919-4e8d-9b92-eb85f4f0ddc9">
 
 Installation time will take around ~10 minutes. When EKS cluster installed, authenticate into EKS cluster with command:
 ~~~
