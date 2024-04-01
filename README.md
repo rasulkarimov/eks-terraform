@@ -1,5 +1,12 @@
 # Full Stack MyBlog Application
-This guide provides step-by-step instructions for provisioning a Kubernetes cluster using Terraform. Before you begin, ensure that you have the following tools installed on your laptop: terraform, aws, docker, helm, kubectl
+This guide provides step-by-step instructions for provisioning a Kubernetes cluster on the AWS public cloud using Terraform and building and deploying the FullStack Flask application, which allows you to publish your personal blog. Before you begin, ensure that you have the following tools installed on your laptop: Terraform, AWS CLI, Docker, Helm, and kubectl.
+
+Generate an AWS token and configure AWS CLI with "aws configure" or environment variables:
+~~~
+export AWS_ACCESS_KEY_ID=<your-aws-access-key-id>
+export AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>
+export AWS_DEFAULT_REGION="eu-north-1" 
+~~~
 
 ## Provisioning a Kubernetes Cluster using Terraform
 To get started, follow these steps:
