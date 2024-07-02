@@ -1,5 +1,17 @@
 # Full Stack MyBlog Application
-This guide provides step-by-step instructions for provisioning a Kubernetes cluster on the AWS public cloud using Terraform and building and deploying the FullStack Flask application, which allows you to publish your personal blog. Before you begin, ensure that you have the following tools installed on your laptop: Terraform, AWS CLI, Docker, Helm, and kubectl.
+This guide provides step-by-step instructions for provisioning a Kubernetes cluster on the AWS public cloud using Terraform and building and deploying code a simple "Hello World" application that exposes the following HTTP-based APIs:
+~~~
+Description: Saves/updates the given user’s name and date of birth in the database.
+Request: PUT /hello/<username> { “dateOfBirth”: “YYYY-MM-DD” }
+Response: 204 No Content 
+~~~
+~~~
+Description: Returns hello birthday message for the given user
+Request: Get /hello/<username>
+Response: 200 OK
+~~~
+
+Before you begin, ensure that you have the following tools installed on your laptop: Terraform, AWS CLI, Docker, Helm, and kubectl.
 
 Generate an AWS token and configure AWS CLI with "aws configure" or environment variables:
 ~~~
@@ -11,9 +23,9 @@ export AWS_DEFAULT_REGION="eu-north-1"
 ## Provisioning a Kubernetes Cluster using Terraform
 To get started, follow these steps:
 
-Inspect the variable-defined files in the `terraform/projects/openinnovation/staging.tfvars` file:
+Inspect the variable-defined files in the `terraform/projects/revolut/staging.tfvars` file:
 ~~~
-cd terraform/projects/openinnovation/
+cd terraform/projects/revolut/
 cat staging.tfvars
 ~~~
 
@@ -71,46 +83,21 @@ Inspect that pods are running:
 kubectl get pods -n=staging
 ~~~
 
-## Testing High Availability:
-For high availability, my-blog was configured with a minimum of 2 replicas and autoscaling enabled to handle increased traffic.
+## Run/Test application locally
 
-To test autoscaling, cpu_loadtest.py script was put into the image. It can be trigger by sending a GET request to /testcpu path by curl or in browser:
 ~~~
-curl $(echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)")/testhpa
+cd app/myblog
+flask db init && flask db migrate && flask db upgrade
+flask --app app --debug run
+~~~ 
+Send requests to API running locally:
 ~~~
-
-Then check HPA status and pod replicas with commands:
+curl -X PUT -H "Content-Type: application/json" -d '{"dateOfBirth": "2000-01-01"}' http://127.0.0.1:5000/hello/johndoe
+curl -X GET http://127.0.0.1:5000/hello/johndoe
 ~~~
-kubectl get hpa -n=staging
-kubectl get pods -n=staging
-~~~
-As we can see, CPU usage increased, this triggered the autoscaling of "myblog" instances:
-![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/97958e1c-6548-4530-a992-00800dafe3c0)
-
-Chack service metrics through Grafana Dashboard. Obtain the URL for Grafana dashboard:
-~~~
-kubectl get svc grafana-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=monitoring
-~~~
-
-Open in your browser and login using default credentials (admin / prom-operator)
-![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/42c44b62-a6de-4211-91d6-c732a3e705e9)
-
-![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/96dd3f01-e3c3-426d-b942-b98b2d183d53)
-
-![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/5d8c1734-5679-48a3-a615-074f3184f1ec)
-
-From the dashboard, we can observe more detailed CPU, memory, and network metrics of our microservices.
-
-Moreover, it's worth considering the implementation of additional application metrics. A recommended starting point would be the Four Golden Signals, referenced here: https://sre.google/sre-book/monitoring-distributed-systems/
-
-Furthermore, full CI/CD integration should be configured, including tests and security tests in the CI/CD flow. Optimizing management of configuration files is essential, alongside managing secret credentials through services like HashiCorp Vault or AWS Secrets Manager, for instance. Also, HTTPS has to be configured. Access to Kubernetes API has to be restricted, public access should be denied, VPN configured. And much more needs to be done. Logs!
-
-In this demo, Nginx proxies requests to the myblog service, which, actually, is meaningless. "myblog" serves both front and backend, it needs to be separated, and the backend should provide an API for the frontend (and possibly for other services). In this case, the architecture will be more scalable and maintainable. 
-
 ## Destroy the cluster
 Delete load balancers and destroy infrastructure with terraform:
 ~~~
 kubectl delete svc nginx-lb  -n staging
-kubectl delete svc grafana-lb  -n monitoring
 terraform destroy -var-file=staging.tfvars
 ~~~

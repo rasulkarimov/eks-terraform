@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.sql import func
 
-# to for testing hpa
+# for testing hpa
 import cpu_loadtest
 
 app = Flask(__name__)
@@ -33,10 +33,6 @@ class User(db.Model):
     def __init__(self, username, dateOfBirth):
         self.username = username
         self.dateOfBirth = dateOfBirth
-
-@app.route('/')
-def index():
-    return 'server is available'
 
 @app.route('/hello/<username>', methods=['PUT'])
 def save_user(username):
@@ -88,6 +84,14 @@ def get_greeting(username):
         message = f"Hello, {username}! Your birthday is in {days_until_birthday} day(s)"
 
     return jsonify({"message": message}), 200
+
+@app.route('/')
+def index():
+    return 'server is available'
+
+@app.route('/testhpa')
+def testhpa():
+    cpu_loadtest.main()
 
 if __name__=="__main__":
     ENVIRONMENT_DEBUG = os.environ.get("APP_DEBUG", True)

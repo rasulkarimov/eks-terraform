@@ -686,16 +686,3 @@ resource "helm_release" "metrics-server" {
 
   depends_on = [aws_eks_node_group.private-nodes]
 }
-
-# test prometheus 
-resource "helm_release" "kube-prometheus-stack" {
-  name = "kube-prometheus-stack"
-  count = 1
-  repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "kube-prometheus-stack"
-  version    = "57.2.0"
-  namespace  = "monitoring"
-  create_namespace = true
-
-  depends_on = [aws_eks_node_group.private-nodes]
-}
