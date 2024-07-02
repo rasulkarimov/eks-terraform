@@ -104,6 +104,8 @@ Send requests to API on localhost:
 curl -X PUT -H "Content-Type: application/json" -d '{"dateOfBirth": "2000-01-01"}' http://127.0.0.1:5000/hello/johndoe
 curl -X GET http://127.0.0.1:5000/hello/johndoe
 ~~~
+<img width="905" alt="image" src="https://github.com/rasulkarimov/eks-terraform/assets/53195216/1d058977-59e6-4db6-ac6d-9dc2c0b749df">
+
 ## Destroy the cluster
 Delete load balancers and destroy infrastructure with terraform:
 ~~~
