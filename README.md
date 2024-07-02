@@ -11,10 +11,10 @@ export AWS_DEFAULT_REGION="eu-north-1"
 ## Provisioning a Kubernetes Cluster using Terraform
 To get started, follow these steps:
 
-Inspect the variable-defined files in the `terraform/projects/openinnovation/main.tf` file:
+Inspect the variable-defined files in the `terraform/projects/openinnovation/staging.tfvars` file:
 ~~~
 cd terraform/projects/openinnovation/
-cat main.tf
+cat staging.tfvars
 ~~~
 
 Initialize Terraform, Preview changes and Apply changes:

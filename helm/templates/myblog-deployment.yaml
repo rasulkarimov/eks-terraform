@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       run: myblog
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -16,6 +16,10 @@ spec:
       containers:
       - name: myblog
         image: {{ .Values.myblog.image.repository }}:{{ .Values.myblog.image.tag }}
+        imagePullPolicy: Always
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres1:postgres1@postgres:5432/posts_api"
         ports:
         - containerPort: 8080
         resources:
@@ -61,6 +65,9 @@ spec:
       - name: init-db
         image: {{ .Values.myblog.image.repository }}:{{ .Values.myblog.image.tag }}
         command: ["/bin/sh", "-c", "flask db init && flask db migrate && flask db upgrade "]
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres1:postgres1@postgres:5432/posts_api"
       restartPolicy: Never
   backoffLimit: 4
   

@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from werkzeug.exceptions import abort
 import sqlite3
 import os
+import json
+from datetime import date, timedelta, datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.sql import func
@@ -11,79 +13,81 @@ import cpu_loadtest
 
 app = Flask(__name__)
 
-# TODO define in env
-app.config['SECRET_KEY'] = 'secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres1:postgres1@postgres:5432/posts_api"
+# conf database
+default_db_uri = 'sqlite:////tmp/test.db'
+db_uri = os.getenv('DATABASE_URL', default_db_uri)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'secret_key')
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-class PostsModel(db.Model):
-    __tablename__ = 'posts'
+class User(db.Model):
+    __tablename__ = 'users'
+    
     id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime(timezone=True), default=func.now())
-    title = db.Column(db.String())
-    content = db.Column(db.String())
-    def __init__(self, title, content):
-        self.title = title
-        self.content = content
-    def __repr__(self):
-        return f"<Car {self.name}>"
-
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    dateOfBirth = db.Column(db.Date, nullable=False)
+    
+    def __init__(self, username, dateOfBirth):
+        self.username = username
+        self.dateOfBirth = dateOfBirth
 
 @app.route('/')
 def index():
-    posts = PostsModel.query.all()
-    return render_template('index.html', posts=posts)
+    return 'server is available'
 
-@app.route('/<int:post_id>')
-def post(post_id):
-    post = PostsModel.query.get_or_404(post_id)
-    return render_template('post.html', post=post)
+@app.route('/hello/<username>', methods=['PUT'])
+def save_user(username):
+    if not username.isalpha():
+        return jsonify({"error": "Username must contain only letters"}), 400
 
-@app.route('/create', methods=('GET','POST'))
-def create():
-    if request.method == 'POST':
-      title = request.form['title']
-      content = request.form['content']
-      new_post = PostsModel(title=title, content=content)
+    data = request.get_json()
+    if 'dateOfBirth' not in data:
+        return jsonify({"error": "Missing dateOfBirth"}), 400
 
-      if not title:
-        flash('Title is required!')
-      else:
-        db.session.add(new_post)
-        db.session.commit()
-        return redirect(url_for('index'))
+    try:
+        date_of_birth = datetime.strptime(data['dateOfBirth'], '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({"error": "Invalid date format, must be YYYY-MM-DD"}), 400
 
-    return render_template('create.html')
+    if date_of_birth >= date.today():
+        return jsonify({"error": "dateOfBirth must be a date before today"}), 400
 
-@app.route('/<int:id>/edit', methods=('GET', 'POST'))
-def edit(id):
-    post = PostsModel.query.get_or_404(id)
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.dateOfBirth = date_of_birth
+    else:
+        user = User(username=username, dateOfBirth=date_of_birth)
+        db.session.add(user)
 
-    if request.method == 'POST':
-      post.title = request.form['title']
-      post.content = request.form['content']
-
-      if not post.title:
-        flash('Title is required!')
-      else:
-        db.session.add(post)
-        db.session.commit()
-        return redirect(url_for('index'))
-
-    return render_template('edit.html', post=post)
-
-@app.route('/<int:id>/delete', methods=('POST',))
-def delete(id):
-    post = PostsModel.query.get_or_404(id)
-    db.session.delete(post)
     db.session.commit()
-    flash('"{}" was successfully deleted!'.format(post.title))
-    return redirect(url_for('index'))
+    return '', 204
 
-@app.route('/testhpa')
-def testhpa():
-    cpu_loadtest.main()
+@app.route('/hello/<username>', methods=['GET'])
+def get_greeting(username):
+    if not username.isalpha():
+        return jsonify({"error": "Username must contain only letters"}), 400
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    today = date.today()
+    birthday_this_year = user.dateOfBirth.replace(year=today.year)
+
+    if birthday_this_year < today:
+        birthday_this_year = user.dateOfBirth.replace(year=today.year + 1)
+
+    days_until_birthday = (birthday_this_year - today).days
+
+    if days_until_birthday == 0:
+        message = f"Hello, {username}! Happy birthday!"
+    else:
+        message = f"Hello, {username}! Your birthday is in {days_until_birthday} day(s)"
+
+    return jsonify({"message": message}), 200
 
 if __name__=="__main__":
     ENVIRONMENT_DEBUG = os.environ.get("APP_DEBUG", True)
