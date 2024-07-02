@@ -92,6 +92,13 @@ Inspect that pods are running:
 kubectl get pods -n=staging
 ~~~
 
+## Destroy the cluster
+Delete load balancers and destroy infrastructure with terraform:
+~~~
+kubectl delete svc nginx-lb  -n staging
+terraform destroy -var-file=staging.tfvars
+~~~
+
 ## Run/Test application locally
 
 ~~~
@@ -106,9 +113,3 @@ curl -X GET http://127.0.0.1:5000/hello/johndoe
 ~~~
 <img width="905" alt="image" src="https://github.com/rasulkarimov/eks-terraform/assets/53195216/1d058977-59e6-4db6-ac6d-9dc2c0b749df">
 
-## Destroy the cluster
-Delete load balancers and destroy infrastructure with terraform:
-~~~
-kubectl delete svc nginx-lb  -n staging
-terraform destroy -var-file=staging.tfvars
-~~~
