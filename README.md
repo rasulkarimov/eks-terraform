@@ -58,22 +58,20 @@ The previous command should provide the public URL to the application, you can t
 If an Internal Server error occurs, it's more likely that the database initialization failed. The database initialization runs only after the first installation as a post-start hook. If, for some reason, the first installation fails, then Helm should be rerun with the option "myblog.initDbJob.force: true." Alternatively, Helm should be uninstalled and then installed from scratch.
 For upgrading/troubleshooting, follow the "Deploy/Upgrade Application by Helm" instructions below. Otherwise, you can skip it.
 
-Test PUT request:
+Test PUT and GET requests:
 ~~~
 curl -X PUT -H "Content-Type: application/json" -d '{"dateOfBirth": "2000-01-01"}' http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)/hello/johndoe
-~~~
-
-Test GET request:
-~~~
 curl -X GET http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)/hello/johndoe
 ~~~
+<img width="1210" alt="image" src="https://github.com/rasulkarimov/eks-terraform/assets/53195216/a5b6b741-7f82-4b8a-8712-5804b1cb0f17">
+
 
 ## Deploy/Upgrade application by Helm 
 This part is already included in Terraform with `null_resource.docker_packaging_helm_install`. The instructions below are for manually updating the application or for troubleshooting in case of any problems during Terraform installation.
 
-During the initial installation, the 'initDbJob' job runs to initialize the PostgreSQL database. Ensure that this job completes successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then rerun the 'helm upgrade'.
+During the initial installation, the 'initDbJob' job runs to initialize the PostgreSQL database. Ensure that this job is completed successfully. If any issues arise, to rerun the job, set "myblog.initDbJob.force" to "true" in the values.yaml file and then run the 'helm upgrade'.
 
-Inspect `values.yaml` File in "helm" Directory. Make sure that the correct image repositories are defined in myblog.image.repository and myblog.image.repository:
+Inspect `values.yaml` File in "helm" Directory. Ensure that the correct image repositories are defined in myblog.image.repository and myblog.image.repository:
 ~~~
 cd ../../../helm/
 cat values.yaml
