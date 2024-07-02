@@ -53,7 +53,8 @@ kubectl get svc -n=staging
 echo "http://$(kubectl get svc nginx-lb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'  -n=staging)"
 ~~~
 The previous command should provide the public URL to the application, you can test server availability by sending GET request via "curl" or from your browser:
-![image](https://github.com/rasulkarimov/eks-terraform/assets/53195216/990bbeaf-2682-4e9a-b45b-8cf9fb515724)
+<img width="903" alt="image" src="https://github.com/rasulkarimov/eks-terraform/assets/53195216/9d7d0ac7-5dad-47de-894e-4a0bab5e87d3">
+
 If an Internal Server error occurs, it's more likely that the database initialization failed. The database initialization runs only after the first installation as a post-start hook. If, for some reason, the first installation fails, then Helm should be rerun with the option "myblog.initDbJob.force: true." Alternatively, Helm should be uninstalled and then installed from scratch.
 For upgrading/troubleshooting, follow the "Deploy/Upgrade Application by Helm" instructions below. Otherwise, you can skip it.
 
