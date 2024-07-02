@@ -1,5 +1,5 @@
-# Full Stack MyBlog Application
-This guide provides step-by-step instructions for provisioning a Kubernetes cluster on the AWS public cloud using Terraform and building and deploying code a simple "Hello World" application that exposes the following HTTP-based APIs:
+# "Hello World"
+This guide provides step-by-step instructions for provisioning a Kubernetes cluster on the AWS public cloud using Terraform and building and deploying simple "Hello World" application that exposes the following HTTP-based APIs:
 ~~~
 Description: Saves/updates the given user’s name and date of birth in the database.
 Request: PUT /hello/<username> { “dateOfBirth”: “YYYY-MM-DD” }
