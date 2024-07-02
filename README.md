@@ -100,7 +100,7 @@ cd app/myblog
 flask db init && flask db migrate && flask db upgrade
 flask --app app --debug run
 ~~~ 
-Send requests to API running locally:
+Send requests to API on localhost:
 ~~~
 curl -X PUT -H "Content-Type: application/json" -d '{"dateOfBirth": "2000-01-01"}' http://127.0.0.1:5000/hello/johndoe
 curl -X GET http://127.0.0.1:5000/hello/johndoe
